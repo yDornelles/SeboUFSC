@@ -1,4 +1,4 @@
-package br.ufsc.sebo.modules.calculadora.dto;
+package br.ufsc.sebo.aplicacao.dto;
 
 public class AdicaoResponse {
     private double resultado;
