@@ -1,7 +1,8 @@
-package br.ufsc.sebo.dominio.service;
+package br.ufsc.sebo.dominio.servico;
 
-import br.ufsc.sebo.dominio.model.Calculadora;
 import org.springframework.stereotype.Service;
+
+import br.ufsc.sebo.dominio.entidades.Calculadora;
 
 @Service
 public class CalculadoraService {

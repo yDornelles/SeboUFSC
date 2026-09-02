@@ -1,4 +1,4 @@
-package br.ufsc.sebo.dominio.model;
+package br.ufsc.sebo.dominio.entidades;
 
 public class Calculadora {
     

@@ -1,8 +1,9 @@
-package br.ufsc.sebo.aplicacao.controller;
+package br.ufsc.sebo.aplicacao.controladores;
 
 import br.ufsc.sebo.aplicacao.dto.AdicaoRequest;
 import br.ufsc.sebo.aplicacao.dto.AdicaoResponse;
-import br.ufsc.sebo.dominio.service.CalculadoraService;
+import br.ufsc.sebo.dominio.servico.CalculadoraService;
+
 import org.springframework.web.bind.annotation.*;
 
 @RestController
