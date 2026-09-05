@@ -7,7 +7,7 @@
 4. Aguarde o terminal carregar. Deixe o servidor rodando em segundo plano.
 
 **2. Acessar a Interface (Frontend)**
-1. Com o backend já em execução, abra o gerenciador de arquivos do seu computador.
-2. Vá até a pasta `frontend` e dê um **duplo clique** no arquivo `index.html`.
-3. O arquivo será aberto no seu navegador padrão.
+1. Com o backend já em execução, navegue no terminal até `seboufsc/frontend/`.
+2. Execute `npm run dev` .
+3. O site estará operando em `http://localhost:5173/`.
 4. Digite os números e clique em "Calcular" para verificar a requisição POST trafegando do Frontend para o servidor Java e retornando o resultado.
