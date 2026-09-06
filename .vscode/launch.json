@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "AplicacaoSebo",
+            "request": "launch",
+            "mainClass": "br.ufsc.sebo.AplicacaoSebo",
+            "projectName": "sebo"
+        },
+        {
+            "type": "java",
             "name": "SeboApplication",
             "request": "launch",
             "mainClass": "br.ufsc.sebo.SeboApplication",
