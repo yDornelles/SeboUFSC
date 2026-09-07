@@ -10,4 +10,3 @@
 1. Com o backend já em execução, navegue no terminal até `seboufsc/frontend/`.
 2. Execute `npm run dev` .
 3. O site estará operando em `http://localhost:5173/`.
-4. Digite os números e clique em "Calcular" para verificar a requisição POST trafegando do Frontend para o servidor Java e retornando o resultado.
