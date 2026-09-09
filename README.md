@@ -8,5 +8,6 @@
 
 **2. Acessar a Interface (Frontend)**
 1. Com o backend já em execução, navegue no terminal até `seboufsc/frontend/`.
-2. Execute `npm run dev` .
+2. Execute `npm install firebase`.
+2. Execute `npm run dev`.
 3. O site estará operando em `http://localhost:5173/`.
