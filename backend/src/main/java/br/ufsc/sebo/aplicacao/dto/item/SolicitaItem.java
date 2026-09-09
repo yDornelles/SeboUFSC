@@ -1,8 +1,8 @@
 package br.ufsc.sebo.aplicacao.dto.item;
 
+import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
 public class SolicitaItem {
@@ -23,7 +23,7 @@ public class SolicitaItem {
     @NotBlank(message = "A opção de negócio é obrigatória.")
     private String opcaoNegocio;
     @NotNull(message = "O preço é obrigatório.")
-    @Positive(message = "O preço deve ser um valor positivo.")
+    @PositiveOrZero(message = "O preço não pode ser negativo.")
     private double preco;
     @NotBlank(message = "A descrição é obrigatória para ajudar os outros usuários.")
     @Size(min = 10, max = 500, message = "A descrição deve ter entre 10 e 500 caracteres.")
