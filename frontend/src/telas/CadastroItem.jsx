@@ -116,7 +116,7 @@ function CadastroItem() {
             <label style={labelStyle}>Tipo de Mídia <span style={asteriscoStyle}>*</span></label>
             <select name="tipoMidia" value={formData.tipoMidia} onChange={handleChange} style={inputStyle}>
               <option value="" disabled>Selecione uma opção...</option>
-              <option value="LIVRO_FISICO">Livro Físico</option>
+              <option value="LIVRO">Livro</option>
               <option value="HQ">HQ</option>
               <option value="MANGA">Mangá</option>
               <option value="REVISTA">Revista</option>
@@ -131,7 +131,7 @@ function CadastroItem() {
             <select name="estadoConservacao" value={formData.estadoConservacao} onChange={handleChange} style={inputStyle}>
               <option value="" disabled>Selecione uma opção...</option>
               <option value="NOVO">Novo</option>
-              <option value="SEMINOVO">Seminovo</option>
+              <option value="SEMI_NOVO">Seminovo</option>
               <option value="USADO">Usado</option>
               <option value="DANIFICADO">Danificado</option>
             </select>
