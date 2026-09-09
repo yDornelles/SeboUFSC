@@ -1,5 +1,6 @@
 package br.ufsc.sebo.aplicacao.controladores;
 
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import jakarta.servlet.http.HttpServletResponse;

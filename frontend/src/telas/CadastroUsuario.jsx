@@ -27,6 +27,13 @@ export default function CadastroUsuario() {
     setMensagem('');
     setErro('');
 
+    // Validação 1: Impede espaços em branco no nome de usuário
+    if (/\s/.test(formData.nomeUsuario)) {
+      setErro('O nome de usuário não pode conter espaços em branco.');
+      return;
+    }
+
+    // Validação 2: Tamanho mínimo
     if (formData.nomeUsuario.trim().length < 6) {
       setErro('O nome de usuário deve ter no mínimo 6 caracteres.');
       return;

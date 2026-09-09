@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Botao from '../componentes/Botao';
 
-function CadastroItem() {
+function CadastroItem({ usuario }) {
   // Estado inicial do formulário
   const [formData, setFormData] = useState({
     titulo: '',
@@ -27,11 +27,9 @@ function CadastroItem() {
   const formatarPreco = () => {
     if (!formData.preco) return;
 
-    // Substitui vírgula por ponto para conversão numérica
     let valorNumerico = parseFloat(formData.preco.replace(',', '.'));
 
     if (!isNaN(valorNumerico)) {
-      // Formata para duas casas decimais e substitui ponto por vírgula
       let valorFormatado = valorNumerico.toFixed(2).replace('.', ',');
       setFormData({ ...formData, preco: valorFormatado });
     } else {
@@ -44,10 +42,19 @@ function CadastroItem() {
     e.preventDefault();
     setMensagem({ texto: 'Salvando...', erro: false });
 
+    // Verifica se o usuário está logado antes de prosseguir
+    console.log('Objeto usuario recebido:', usuario);
+
+    const idUsuarioAtual = usuario?.uid || usuario?.id;
+    if (!idUsuarioAtual) {
+      setMensagem({ texto: '❌ Erro: Usuário não autenticado.', erro: true });
+      return;
+    }
+
     const precoFinal = formData.opcaoNegocio === 'SO_TROCA' ? 0 : parseFloat(formData.preco.replace(',', '.'));
 
     const payload = {
-      usuarioId: "123e4567-e89b-12d3-a456-426614174000",
+      usuarioId: idUsuarioAtual, // ID dinâmico vindo do usuário logado
       ...formData,
       preco: precoFinal
     };
@@ -86,7 +93,6 @@ function CadastroItem() {
   const labelStyle = { display: 'block', fontWeight: 'bold', marginBottom: '5px', color: '#374151' };
   const asteriscoStyle = { color: '#dc2626' };
 
-  // Renderiza o formulário de cadastro
   return (
     <div style={{ 
       maxWidth: '650px', margin: '0 auto', padding: '30px', 
