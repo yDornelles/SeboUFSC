@@ -1,11 +1,16 @@
 package br.ufsc.sebo.dominio.servico;
 
-import br.ufsc.sebo.dominio.entidades.item.*;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+
+import br.ufsc.sebo.dominio.entidades.item.EstadoConservacao;
+import br.ufsc.sebo.dominio.entidades.item.Item;
+import br.ufsc.sebo.dominio.entidades.item.OpcaoNegocio;
+import br.ufsc.sebo.dominio.entidades.item.StatusItem;
+import br.ufsc.sebo.dominio.entidades.item.TipoMidia;
 
 @Service
 public class ServicoItem {
@@ -42,8 +47,13 @@ public class ServicoItem {
         return novoItem;
     }
 
-    // funcao de listar itens da manu
     public List<Item> listarTodosOsItens() {
         return bancoDeDadosFalso;
+    }
+
+    public List<Item> listarItensDisponiveis() {
+        return bancoDeDadosFalso.stream()
+            .filter(item -> item.getStatus() == StatusItem.DISPONIVEL)
+            .collect(Collectors.toList());
     }
 }
