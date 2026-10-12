@@ -1,11 +1,11 @@
 package br.ufsc.sebo.dominio.servico;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import br.ufsc.sebo.dominio.entidades.Catalogo;
 import br.ufsc.sebo.dominio.entidades.item.EstadoConservacao;
 import br.ufsc.sebo.dominio.entidades.item.Item;
 import br.ufsc.sebo.dominio.entidades.item.OpcaoNegocio;
@@ -15,7 +15,7 @@ import br.ufsc.sebo.dominio.entidades.item.TipoMidia;
 @Service
 public class ServicoItem {
 
-    private final List<Item> bancoDeDadosFalso = new ArrayList<>();
+    private final Catalogo catalogo = new Catalogo();
 
     public Item cadastrarItem(String usuarioId, String titulo, TipoMidia tipoMidia, 
         String autor, String editora, StatusItem status, 
@@ -41,19 +41,19 @@ public class ServicoItem {
         Item novoItem = new Item(usuarioId, titulo, tipoMidia, autor, editora, 
         status, estadoConservacao, opcaoNegocio, preco, descricao, imagem);
         
-        bancoDeDadosFalso.add(novoItem);
+        catalogo.adicionarItem(novoItem);
 
         System.out.println("Novo item registrado no sistema: " + novoItem.getTitulo());
         return novoItem;
     }
 
     public List<Item> listarTodosOsItens() {
-        return bancoDeDadosFalso;
+        return catalogo.getItensAcervo();
     }
 
     public List<Item> listarItensDisponiveis() {
-        return bancoDeDadosFalso.stream()
-            .filter(item -> item.getStatus() == StatusItem.DISPONIVEL)
-            .collect(Collectors.toList());
+        return catalogo.getItensAcervo().stream()
+                .filter(item -> item.getStatus() == StatusItem.DISPONIVEL)
+                .collect(Collectors.toList());
     }
 }

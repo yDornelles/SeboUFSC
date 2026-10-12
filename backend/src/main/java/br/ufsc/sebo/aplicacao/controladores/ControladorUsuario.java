@@ -1,14 +1,17 @@
 package br.ufsc.sebo.aplicacao.controladores;
 
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.*;
-import jakarta.validation.Valid;
-import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import br.ufsc.sebo.dominio.entidades.usuario.*;
 import br.ufsc.sebo.aplicacao.dto.usuario.RespostaUsuario;
 import br.ufsc.sebo.aplicacao.dto.usuario.SolicitaUsuario;
+import br.ufsc.sebo.dominio.entidades.Usuario;
 import br.ufsc.sebo.dominio.servico.ServicoUsuario;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 
 
 @RestController 
