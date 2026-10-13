@@ -9,7 +9,11 @@
             "name": "AplicacaoSebo",
             "request": "launch",
             "mainClass": "br.ufsc.sebo.AplicacaoSebo",
-            "projectName": "sebo"
+            "projectName": "sebo",
+            "env": {
+                    "SEBO_MAIL_USERNAME": "manuelaskist11@gmail.com",
+                    "SEBO_MAIL_PASSWORD": "ulpskhzrxcvbictv"
+                    }
         },
         {
             "type": "java",
