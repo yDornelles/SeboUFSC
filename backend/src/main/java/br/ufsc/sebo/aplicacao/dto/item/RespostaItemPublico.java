@@ -9,6 +9,7 @@ import br.ufsc.sebo.dominio.entidades.item.TipoMidia;
 public class RespostaItemPublico {
     private String id;
     private String usuarioId;
+    private String nomeProprietario;
     private String titulo;
     private TipoMidia tipoMidia;
     private String autor;
@@ -20,9 +21,10 @@ public class RespostaItemPublico {
     private String descricao;
     private String imagem;
 
-    public RespostaItemPublico(Item item) {
+    public RespostaItemPublico(Item item, String nomeProprietario) {
         this.id = item.getId();
         this.usuarioId = item.getUsuarioId();
+        this.nomeProprietario = nomeProprietario;
         this.titulo = item.getTitulo();
         this.tipoMidia = item.getTipoMidia();
         this.autor = item.getAutor();
@@ -37,6 +39,7 @@ public class RespostaItemPublico {
 
     public String getId() { return id; }
     public String getUsuarioId() { return usuarioId; }
+    public String getNomeProprietario() { return nomeProprietario; } 
     public String getTitulo() { return titulo; }
     public TipoMidia getTipoMidia() { return tipoMidia; }
     public String getAutor() { return autor; }

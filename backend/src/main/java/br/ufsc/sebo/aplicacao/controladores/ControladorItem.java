@@ -5,7 +5,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -52,7 +54,38 @@ public class ControladorItem {
     public List<RespostaItemPublico> listarItens() {
         return servico.listarItensDisponiveis()
             .stream()
-            .map(RespostaItemPublico::new)
+            .map(item -> new RespostaItemPublico(item, servico.buscarNomeProprietario(item.getUsuarioId())))
             .collect(Collectors.toList());
+    }
+
+    @GetMapping("/{id}")
+    public RespostaItemPublico buscarItemPorId(@PathVariable String id) {
+        Item item = servico.buscarPorId(id);
+        String nomeDono = servico.buscarNomeProprietario(item.getUsuarioId());
+        return new RespostaItemPublico(item, nomeDono);
+    }
+
+    @GetMapping("/usuario/{usuarioId}")
+    public List<RespostaItemPublico> listarItensDoUsuario(@PathVariable String usuarioId) {
+        String nomeDono = servico.buscarNomeProprietario(usuarioId);
+        return servico.listarItensPorUsuario(usuarioId)
+            .stream()
+            .map(item -> new RespostaItemPublico(item, nomeDono))
+            .collect(Collectors.toList());
+    }
+
+    @PutMapping("/editar/{id}")
+    public RespostaItem editarItem(@PathVariable String id, @Valid @RequestBody SolicitaItem req) {
+        TipoMidia midia = TipoMidia.valueOf(req.getTipoMidia().toUpperCase());
+        EstadoConservacao estado = EstadoConservacao.valueOf(req.getEstadoConservacao().toUpperCase());
+        OpcaoNegocio negocio = OpcaoNegocio.valueOf(req.getOpcaoNegocio().toUpperCase());
+
+        Item itemAtualizado = servico.atualizarItem(
+            id, req.getUsuarioId(), req.getTitulo(), midia, req.getAutor(), 
+            req.getEditora(), estado, negocio, 
+            req.getPreco(), req.getDescricao(), req.getImagem()
+        );
+        
+        return new RespostaItem(itemAtualizado.getId(), "Item atualizado com sucesso!");
     }
 }

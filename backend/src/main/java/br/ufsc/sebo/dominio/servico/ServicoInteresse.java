@@ -19,6 +19,11 @@ public class ServicoInteresse {
 
     public void adicionarInteresse(String usuarioId, String itemId) {
         Item item = servicoItem.buscarPorId(itemId);
+        
+        if (item.getUsuarioId().equals(usuarioId)) {
+            throw new IllegalArgumentException("Você não pode manifestar interesse no seu próprio item.");
+        }
+
         Usuario usuario = servicoUsuario.buscarPorId(usuarioId);
 
         if (!usuario.adicionarInteresse(item)) {

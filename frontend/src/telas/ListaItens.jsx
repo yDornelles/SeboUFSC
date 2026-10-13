@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import CartaoItem from '../componentes/CartaoItem';
+import ModalItem from '../componentes/ModalItem';
 
-function ListaItens() {
+function ListaItens({ usuario, onVerPerfil }) { 
   const [itens, setItens] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState('');
+  const [itemSelecionado, setItemSelecionado] = useState(null);
 
   useEffect(() => {
     buscarItens();
@@ -65,9 +67,26 @@ function ListaItens() {
           gap: '20px',
         }}>
           {itens.map((item) => (
-            <CartaoItem key={item.id} item={item} />
+            <div 
+              key={item.id} 
+              onClick={() => setItemSelecionado(item)}
+              style={{ cursor: 'pointer', transition: 'transform 0.2s' }}
+              onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
+              onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+            >
+              <CartaoItem item={item} />
+            </div>
           ))}
         </div>
+      )}
+
+      {itemSelecionado && (
+        <ModalItem 
+          item={itemSelecionado} 
+          usuarioLogado={usuario} 
+          onClose={() => setItemSelecionado(null)} 
+          onVerPerfil={onVerPerfil}
+        />
       )}
     </div>
   );

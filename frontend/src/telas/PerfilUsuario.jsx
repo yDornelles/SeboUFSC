@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import CartaoItem from '../componentes/CartaoItem';
+import ModalItem from '../componentes/ModalItem'; 
 
-export default function PerfilUsuario({ usuarioLogado, perfilId }) {
+export default function PerfilUsuario({ usuarioLogado, perfilId, onEditarItem, onVerPerfil }) {
   const [usuario, setUsuario] = useState(null);
   const [interesses, setInteresses] = useState([]);
+  const [meusItens, setMeusItens] = useState([]); 
   const [editando, setEditando] = useState(false);
+  const [itemSelecionado, setItemSelecionado] = useState(null); 
   
   const [formData, setFormData] = useState({
     nome: '',
@@ -37,6 +40,12 @@ export default function PerfilUsuario({ usuarioLogado, perfilId }) {
         sobrenome: dadosUsuario.sobrenome || '',
         nomeUsuario: dadosUsuario.nomeUsuario || ''
       });
+
+      const resMeusItens = await fetch(`http://localhost:8080/api/itens/usuario/${idAlvo}`);
+      if (resMeusItens.ok) {
+        const dadosMeusItens = await resMeusItens.json();
+        setMeusItens(dadosMeusItens);
+      }
 
       const resInteresses = await fetch(`http://localhost:8080/api/interesses/listar/${idAlvo}`);
       if (resInteresses.ok) {
@@ -88,8 +97,9 @@ export default function PerfilUsuario({ usuarioLogado, perfilId }) {
   if (erro && !usuario) return <div style={{ textAlign: 'center', padding: '40px', color: '#991b1b' }}>❌ {erro}</div>;
 
   return (
-    <div style={{ maxWidth: '900px', margin: '0 auto', padding: '20px', fontFamily: 'sans-serif' }}>
+    <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '20px', fontFamily: 'sans-serif' }}>
       
+      {/* SEÇÃO 1: Dados do Perfil */}
       <div style={{ backgroundColor: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', marginBottom: '30px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <h2 style={{ margin: 0, color: '#1f2937' }}>Perfil de @{usuario?.nomeUsuario}</h2>
@@ -134,6 +144,49 @@ export default function PerfilUsuario({ usuarioLogado, perfilId }) {
         )}
       </div>
 
+      {/* SEÇÃO 2: Meu Acervo */}
+      <div style={{ backgroundColor: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', marginBottom: '30px' }}>
+        <h3 style={{ marginTop: 0, color: '#1f2937', marginBottom: '20px' }}>Meu Acervo ({meusItens.length})</h3>
+        
+        {meusItens.length === 0 ? (
+          <p style={{ color: '#6b7280' }}>Nenhum item cadastrado no acervo.</p>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '20px' }}>
+            {meusItens.map((item) => (
+              <div key={item.id} style={{ position: 'relative' }}>
+                <div 
+                  onClick={() => setItemSelecionado(item)}
+                  style={{ cursor: 'pointer', transition: 'transform 0.2s' }}
+                  onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
+                  onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                >
+                  <CartaoItem item={item} />
+                </div>
+                
+                {ehProprioPerfil && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation(); 
+                      onEditarItem(item.id);
+                    }}
+                    style={{
+                      position: 'absolute', top: '10px', right: '10px',
+                      backgroundColor: '#fbbf24', color: '#944c0c', border: 'none',
+                      padding: '8px 12px', borderRadius: '8px', fontWeight: 'bold', 
+                      cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                      zIndex: 10
+                    }}
+                  >
+                    ✏️ Editar
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* SEÇÃO 3: Interesses */}
       <div style={{ backgroundColor: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
         <h3 style={{ marginTop: 0, color: '#1f2937', marginBottom: '20px' }}>Itens de Interesse ({interesses.length})</h3>
         
@@ -142,11 +195,28 @@ export default function PerfilUsuario({ usuarioLogado, perfilId }) {
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '20px' }}>
             {interesses.map((item) => (
-              <CartaoItem key={item.id} item={item} />
+              <div 
+                key={item.id} 
+                onClick={() => setItemSelecionado(item)}
+                style={{ cursor: 'pointer', transition: 'transform 0.2s' }}
+                onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
+                onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+              >
+                <CartaoItem item={item} />
+              </div>
             ))}
           </div>
         )}
       </div>
+
+      {itemSelecionado && (
+        <ModalItem 
+          item={itemSelecionado} 
+          usuarioLogado={usuarioLogado} 
+          onClose={() => setItemSelecionado(null)} 
+          onVerPerfil={onVerPerfil} 
+        />
+      )}
 
     </div>
   );

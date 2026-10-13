@@ -45,5 +45,14 @@ public class Item {
     public double getPreco() { return preco; }
     public String getDescricao() { return descricao; }
     public String getImagem() { return imagem; }
+
+    public void setTitulo(String titulo) { this.titulo = titulo; }
+    public void setTipoMidia(TipoMidia tipoMidia) { this.tipoMidia = tipoMidia; }
+    public void setAutor(String autor) { this.autor = autor; }
+    public void setEditora(String editora) { this.editora = editora; }
+    public void setEstadoConservacao(EstadoConservacao estadoConservacao) { this.estadoConservacao = estadoConservacao; }
+    public void setOpcaoNegocio(OpcaoNegocio opcaoNegocio) { this.opcaoNegocio = opcaoNegocio; }
+    public void setPreco(double preco) { this.preco = preco; }
+    public void setDescricao(String descricao) { this.descricao = descricao; }
+    public void setImagem(String imagem) { this.imagem = imagem; }
 }
-//  

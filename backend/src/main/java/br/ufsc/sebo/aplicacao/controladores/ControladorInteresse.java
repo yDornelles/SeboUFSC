@@ -3,7 +3,6 @@ package br.ufsc.sebo.aplicacao.controladores;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +16,7 @@ import br.ufsc.sebo.aplicacao.dto.interesse.RespostaInteresse;
 import br.ufsc.sebo.aplicacao.dto.interesse.SolicitaInteresse;
 import br.ufsc.sebo.aplicacao.dto.item.RespostaItemPublico;
 import br.ufsc.sebo.dominio.servico.ServicoInteresse;
+import br.ufsc.sebo.dominio.servico.ServicoItem;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
@@ -26,9 +26,11 @@ import jakarta.validation.Valid;
 public class ControladorInteresse {
 
     private final ServicoInteresse servico;
+    private final ServicoItem servicoItem; 
 
-    public ControladorInteresse(ServicoInteresse servico) {
+    public ControladorInteresse(ServicoInteresse servico, ServicoItem servicoItem) {
         this.servico = servico;
+        this.servicoItem = servicoItem;
     }
 
     @PostMapping("/adicionar")
@@ -61,7 +63,10 @@ public class ControladorInteresse {
         try {
             return servico.listarInteresses(usuarioId)
                 .stream()
-                .map(RespostaItemPublico::new)
+                .map(item -> new RespostaItemPublico(
+                    item, 
+                    servicoItem.buscarNomeProprietario(item.getUsuarioId())
+                ))
                 .collect(Collectors.toList());
         } catch (IllegalArgumentException e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

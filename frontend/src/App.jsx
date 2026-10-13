@@ -7,12 +7,15 @@ import ListaItens from './telas/ListaItens';
 import LoginUsuario from './telas/LoginUsuario';
 import CadastroUsuario from './telas/CadastroUsuario';
 import PerfilUsuario from './telas/PerfilUsuario';
+import EditarItem from './telas/EditarItem'; 
 
 function App() {
   const [usuario, setUsuario] = useState(null);
   const [carregando, setCarregando] = useState(true);
   const [abaAtiva, setAbaAtiva] = useState('lista');
   const [abaAuth, setAbaAuth] = useState('login'); // 'login' ou 'cadastro'
+  const [itemParaEditar, setItemParaEditar] = useState(null); 
+  const [perfilIdAlvo, setPerfilIdAlvo] = useState(null); 
 
   // Monitora o estado da autenticação no Firebase
   useEffect(() => {
@@ -29,16 +32,48 @@ function App() {
     await signOut(auth);
   };
 
-  // Renderiza a tela de acordo com a aba ativa, passando as props necessárias
+  // Renderiza a tela de acordo com a aba ativa
   const renderizarTelaAtiva = () => {
     switch (abaAtiva) {
       case 'cadastro':
         return <CadastroItem usuario={usuario} />;
       case 'perfil':
-        return <PerfilUsuario usuarioLogado={usuario} />;
+        return (
+          <PerfilUsuario 
+            usuarioLogado={usuario} 
+            perfilId={perfilIdAlvo} 
+            onEditarItem={(id) => {
+              setItemParaEditar(id);
+              setAbaAtiva('editar');
+            }} 
+            onVerPerfil={(idDono) => {
+              setPerfilIdAlvo(idDono);
+              setAbaAtiva('perfil');
+            }}
+          />
+        );
+      case 'editar':
+        return (
+          <EditarItem 
+            usuario={usuario} 
+            itemId={itemParaEditar} 
+            onVoltar={() => {
+              setPerfilIdAlvo(null);
+              setAbaAtiva('perfil');
+            }} 
+          />
+        );
       case 'lista':
       default:
-        return <ListaItens usuario={usuario} />;
+        return (
+          <ListaItens 
+            usuario={usuario} 
+            onVerPerfil={(idDono) => {
+              setPerfilIdAlvo(idDono);
+              setAbaAtiva('perfil');
+            }}
+          />
+        );
     }
   };
 
@@ -111,7 +146,13 @@ function App() {
           {botoesAba.map((aba) => (
             <button
               key={aba.id}
-              onClick={() => setAbaAtiva(aba.id)}
+              onClick={() => {
+                if (aba.id === 'perfil') {
+                  setPerfilIdAlvo(null);
+                }
+                setAbaAtiva(aba.id);
+                setItemParaEditar(null);
+              }}
               style={{
                 padding: '10px 20px',
                 borderRadius: '8px',
