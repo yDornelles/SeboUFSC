@@ -26,14 +26,24 @@ public class AlgTrocas {
     }
 
     public List<Item> buscarCiclo(Usuario u, Item i) {
+        if (i == null || !aceitaTroca(i)) {
+            return new ArrayList<>();
+        }
+        
+        Usuario donoDoItem = encontrarDono(i);
+        if (donoDoItem == null || donoDoItem.getId().equals(u.getId())) {
+            return new ArrayList<>();
+        }
+
         Queue<Caminho> filaDeExploracao = new ArrayDeque<>();
-        filaDeExploracao.add(new Caminho(u));
+        Caminho caminhoInicial = new Caminho(u).estender(donoDoItem, i);
+        filaDeExploracao.add(caminhoInicial);
 
         while (!filaDeExploracao.isEmpty()) {
             Caminho caminhoAtual = filaDeExploracao.poll();
             Usuario ultimoUsuario = caminhoAtual.ultimoUsuario();
 
-            if (caminhoAtual.participantes.size() >= MAX_PARTICIPANTES) {
+            if (caminhoAtual.participantes.size() > MAX_PARTICIPANTES) {
                 continue;
             }
 
