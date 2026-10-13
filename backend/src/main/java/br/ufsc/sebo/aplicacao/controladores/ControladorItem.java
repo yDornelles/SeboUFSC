@@ -3,7 +3,10 @@ package br.ufsc.sebo.aplicacao.controladores;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,19 +38,23 @@ public class ControladorItem {
     }
 
     @PostMapping("/cadastrar")
-    public RespostaItem cadastrarItem(@Valid @RequestBody SolicitaItem req) {
-        TipoMidia midia = TipoMidia.valueOf(req.getTipoMidia().toUpperCase());
-        StatusItem status = StatusItem.valueOf(req.getStatus().toUpperCase());
-        EstadoConservacao estado = EstadoConservacao.valueOf(req.getEstadoConservacao().toUpperCase());
-        OpcaoNegocio negocio = OpcaoNegocio.valueOf(req.getOpcaoNegocio().toUpperCase());
+    public ResponseEntity<RespostaItem> cadastrarItem(@Valid @RequestBody SolicitaItem req) {
+        try {
+            TipoMidia midia = TipoMidia.valueOf(req.getTipoMidia().toUpperCase());
+            StatusItem status = StatusItem.valueOf(req.getStatus().toUpperCase());
+            EstadoConservacao estado = EstadoConservacao.valueOf(req.getEstadoConservacao().toUpperCase());
+            OpcaoNegocio negocio = OpcaoNegocio.valueOf(req.getOpcaoNegocio().toUpperCase());
 
-        Item itemSalvo = servico.cadastrarItem(
-            req.getUsuarioId(), req.getTitulo(), midia, req.getAutor(), 
-            req.getEditora(), status, estado, negocio, 
-            req.getPreco(), req.getDescricao(), req.getImagem()
-        );
-        
-        return new RespostaItem(itemSalvo.getId(), "Item cadastrado com sucesso!");
+            Item itemSalvo = servico.cadastrarItem(
+                req.getUsuarioId(), req.getTitulo(), midia, req.getAutor(), 
+                req.getEditora(), status, estado, negocio, 
+                req.getPreco(), req.getDescricao(), req.getImagem()
+            );
+            
+            return ResponseEntity.ok(new RespostaItem(itemSalvo.getId(), "Item cadastrado com sucesso!"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new RespostaItem(null, e.getMessage()));
+        }
     }
 
     @GetMapping("/listar")
@@ -75,17 +82,33 @@ public class ControladorItem {
     }
 
     @PutMapping("/editar/{id}")
-    public RespostaItem editarItem(@PathVariable String id, @Valid @RequestBody SolicitaItem req) {
-        TipoMidia midia = TipoMidia.valueOf(req.getTipoMidia().toUpperCase());
-        EstadoConservacao estado = EstadoConservacao.valueOf(req.getEstadoConservacao().toUpperCase());
-        OpcaoNegocio negocio = OpcaoNegocio.valueOf(req.getOpcaoNegocio().toUpperCase());
+    public ResponseEntity<RespostaItem> editarItem(@PathVariable String id, @Valid @RequestBody SolicitaItem req) {
+        try {
+            TipoMidia midia = TipoMidia.valueOf(req.getTipoMidia().toUpperCase());
+            EstadoConservacao estado = EstadoConservacao.valueOf(req.getEstadoConservacao().toUpperCase());
+            OpcaoNegocio negocio = OpcaoNegocio.valueOf(req.getOpcaoNegocio().toUpperCase());
 
-        Item itemAtualizado = servico.atualizarItem(
-            id, req.getUsuarioId(), req.getTitulo(), midia, req.getAutor(), 
-            req.getEditora(), estado, negocio, 
-            req.getPreco(), req.getDescricao(), req.getImagem()
-        );
-        
-        return new RespostaItem(itemAtualizado.getId(), "Item atualizado com sucesso!");
+            Item itemAtualizado = servico.atualizarItem(
+                id, req.getUsuarioId(), req.getTitulo(), midia, req.getAutor(), 
+                req.getEditora(), estado, negocio, 
+                req.getPreco(), req.getDescricao(), req.getImagem()
+            );
+            
+            return ResponseEntity.ok(new RespostaItem(itemAtualizado.getId(), "Item atualizado com sucesso!"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new RespostaItem(null, e.getMessage()));
+        }
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<RespostaItem> handleExceptions(Exception e) {
+        String mensagem = e.getMessage();
+        if (e instanceof MethodArgumentNotValidException) {
+            MethodArgumentNotValidException ex = (MethodArgumentNotValidException) e;
+            if (ex.getBindingResult().getFieldError() != null) {
+                mensagem = ex.getBindingResult().getFieldError().getDefaultMessage();
+            }
+        }
+        return ResponseEntity.badRequest().body(new RespostaItem(null, mensagem != null ? mensagem : "Erro de requisição inválida."));
     }
 }

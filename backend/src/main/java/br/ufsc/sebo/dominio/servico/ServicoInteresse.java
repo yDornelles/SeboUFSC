@@ -45,7 +45,7 @@ public class ServicoInteresse {
 
         Usuario dono = servicoUsuario.buscarPorId(item.getUsuarioId());
         servicoNotificacao.criarNotificacao(dono,
-            usuario.getNomeUsuario() + " demonstrou interesse no seu item \"" + item.getTitulo() + "\".");
+            usuario.getNomeUsuario() + " demonstrou interesse no seu item \"" + item.getTitulo() + "\".", null, usuario.getId());
 
         List<Item> ciclo = algTrocas.buscarCiclo(usuario, item);
         if (ciclo.isEmpty()) {

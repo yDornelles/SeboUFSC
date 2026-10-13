@@ -27,13 +27,11 @@ export default function CadastroUsuario() {
     setMensagem('');
     setErro('');
 
-    // Validação 1: Impede espaços em branco no nome de usuário
     if (/\s/.test(formData.nomeUsuario)) {
       setErro('O nome de usuário não pode conter espaços em branco.');
       return;
     }
 
-    // Validação 2: Tamanho mínimo
     if (formData.nomeUsuario.trim().length < 6) {
       setErro('O nome de usuário deve ter no mínimo 6 caracteres.');
       return;
@@ -64,21 +62,12 @@ export default function CadastroUsuario() {
         })
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const responseText = await response.text();
-        let errorMessage = 'Erro ao cadastrar usuário no servidor.';
-
-        try {
-          const errorJson = JSON.parse(responseText);
-          errorMessage = errorJson.mensagem || errorJson.message || responseText;
-        } catch {
-          if (responseText) errorMessage = responseText;
-        }
-
-        throw new Error(errorMessage);
+        throw new Error(data.mensagem || 'Erro ao cadastrar usuário no servidor.');
       }
 
-      const data = await response.json();
       setMensagem(`${data.mensagem || 'Usuário cadastrado com sucesso!'} (@${formData.nomeUsuario})`);
       setFormData({ nome: '', sobrenome: '', nomeUsuario: '', email: '', senha: '' });
 
@@ -103,7 +92,6 @@ export default function CadastroUsuario() {
     }
   };
 
-  // Estilos compartilhados baseados no CadastroItem
   const inputStyle = {
     width: '100%',
     padding: '10px',
@@ -168,90 +156,32 @@ export default function CadastroUsuario() {
       <form onSubmit={handleSubmit}>
         <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
           <div style={{ flex: '1 1 200px' }}>
-            <label style={labelStyle}>
-              Nome <span style={asteriscoStyle}>*</span>
-            </label>
-            <input
-              type="text"
-              name="nome"
-              value={formData.nome}
-              onChange={handleChange}
-              required
-              style={inputStyle}
-            />
+            <label style={labelStyle}>Nome <span style={asteriscoStyle}>*</span></label>
+            <input type="text" name="nome" value={formData.nome} onChange={handleChange} required style={inputStyle} />
           </div>
 
           <div style={{ flex: '1 1 200px' }}>
-            <label style={labelStyle}>
-              Sobrenome <span style={asteriscoStyle}>*</span>
-            </label>
-            <input
-              type="text"
-              name="sobrenome"
-              value={formData.sobrenome}
-              onChange={handleChange}
-              required
-              style={inputStyle}
-            />
+            <label style={labelStyle}>Sobrenome <span style={asteriscoStyle}>*</span></label>
+            <input type="text" name="sobrenome" value={formData.sobrenome} onChange={handleChange} required style={inputStyle} />
           </div>
         </div>
 
-        <label style={labelStyle}>
-          Nome de Usuário (@) <span style={asteriscoStyle}>*</span>
-        </label>
-        <input
-          type="text"
-          name="nomeUsuario"
-          value={formData.nomeUsuario}
-          onChange={handleChange}
-          required
-          minLength={6}
-          maxLength={20}
-          style={inputStyle}
-        />
+        <label style={labelStyle}>Nome de Usuário (@) <span style={asteriscoStyle}>*</span></label>
+        <input type="text" name="nomeUsuario" value={formData.nomeUsuario} onChange={handleChange} required minLength={6} maxLength={20} style={inputStyle} />
 
-        <label style={labelStyle}>
-          E-mail <span style={asteriscoStyle}>*</span>
-        </label>
-        <input
-          type="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-          style={inputStyle}
-        />
+        <label style={labelStyle}>E-mail <span style={asteriscoStyle}>*</span></label>
+        <input type="email" name="email" value={formData.email} onChange={handleChange} required style={inputStyle} />
 
-        <label style={labelStyle}>
-          Senha <span style={asteriscoStyle}>*</span>
-        </label>
-        <input
-          type="password"
-          name="senha"
-          value={formData.senha}
-          onChange={handleChange}
-          required
-          minLength={6}
-          style={inputStyle}
-        />
+        <label style={labelStyle}>Senha <span style={asteriscoStyle}>*</span></label>
+        <input type="password" name="senha" value={formData.senha} onChange={handleChange} required minLength={6} style={inputStyle} />
 
         <button
           type="submit"
           style={{
-            backgroundColor: '#1d4ed8',
-            color: 'white',
-            padding: '12px',
-            border: 'none',
-            borderRadius: '8px',
-            fontSize: '16px',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            width: '100%',
-            marginTop: '10px',
-            transition: 'background-color 0.2s'
+            backgroundColor: '#1d4ed8', color: 'white', padding: '12px',
+            border: 'none', borderRadius: '8px', fontSize: '16px', fontWeight: 'bold',
+            cursor: 'pointer', width: '100%', marginTop: '10px'
           }}
-          onMouseOver={(e) => e.target.style.backgroundColor = '#1e40af'}
-          onMouseOut={(e) => e.target.style.backgroundColor = '#1d4ed8'}
         >
           Cadastrar Usuário
         </button>

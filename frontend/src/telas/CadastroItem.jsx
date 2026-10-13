@@ -2,7 +2,6 @@ import { useState } from 'react';
 import Botao from '../componentes/Botao';
 
 function CadastroItem({ usuario }) {
-  // Estado inicial do formulário
   const [formData, setFormData] = useState({
     titulo: '',
     tipoMidia: '',
@@ -18,17 +17,13 @@ function CadastroItem({ usuario }) {
 
   const [mensagem, setMensagem] = useState({ texto: '', erro: false });
 
-  // Função para atualizar o estado do formulário conforme o usuário digita
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Função para formatar o preço antes de enviar ao backend
   const formatarPreco = () => {
     if (!formData.preco) return;
-
     let valorNumerico = parseFloat(formData.preco.replace(',', '.'));
-
     if (!isNaN(valorNumerico)) {
       let valorFormatado = valorNumerico.toFixed(2).replace('.', ',');
       setFormData({ ...formData, preco: valorFormatado });
@@ -37,13 +32,9 @@ function CadastroItem({ usuario }) {
     }
   };
 
-  // Função para enviar os dados do formulário para o backend
   const cadastrar = async (e) => {
     e.preventDefault();
     setMensagem({ texto: 'Salvando...', erro: false });
-
-    // Verifica se o usuário está logado antes de prosseguir
-    console.log('Objeto usuario recebido:', usuario);
 
     const idUsuarioAtual = usuario?.uid || usuario?.id;
     if (!idUsuarioAtual) {
@@ -54,7 +45,7 @@ function CadastroItem({ usuario }) {
     const precoFinal = formData.opcaoNegocio === 'SO_TROCA' ? 0 : parseFloat(formData.preco.replace(',', '.'));
 
     const payload = {
-      usuarioId: idUsuarioAtual, // ID dinâmico vindo do usuário logado
+      usuarioId: idUsuarioAtual, 
       ...formData,
       preco: precoFinal
     };
@@ -66,14 +57,20 @@ function CadastroItem({ usuario }) {
         body: JSON.stringify(payload)
       });
 
-      if (!resposta.ok) {
-        throw new Error("Erro ao salvar. Verifique se o servidor Java está rodando.");
+      const respostaTexto = await resposta.text();
+      let dados;
+      try {
+        dados = JSON.parse(respostaTexto);
+      } catch {
+        dados = { mensagem: respostaTexto };
       }
 
-      const dados = await resposta.json();
-      setMensagem({ texto: `✅ ${dados.mensagem} (ID: ${dados.id})`, erro: false });
+      if (!resposta.ok) {
+        throw new Error(dados.mensagem || respostaTexto || 'Erro ao cadastrar o item.');
+      }
+
+      setMensagem({ texto: `✅ ${dados.mensagem || 'Item cadastrado com sucesso!'}`, erro: false });
       
-      // Limpa os campos após salvar com sucesso
       setFormData({
         titulo: '', tipoMidia: '', autor: '', editora: '', status: 'DISPONIVEL',
         estadoConservacao: '', opcaoNegocio: '', preco: '', descricao: '', imagem: ''
@@ -84,7 +81,6 @@ function CadastroItem({ usuario }) {
     }
   };
 
-  // Estilos inline para inputs e labels
   const inputStyle = {
     width: '100%', padding: '10px', marginBottom: '15px', 
     border: '1px solid #ccc', borderRadius: '6px', boxSizing: 'border-box',
@@ -104,16 +100,16 @@ function CadastroItem({ usuario }) {
       <form onSubmit={cadastrar}>
         
         <label style={labelStyle}>Título do Item <span style={asteriscoStyle}>*</span></label>
-        <input name="titulo" type="text" value={formData.titulo} onChange={handleChange} required style={inputStyle} placeholder="" />
+        <input name="titulo" type="text" value={formData.titulo} onChange={handleChange} required style={inputStyle} />
 
         <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
           <div style={{ flex: '1 1 200px' }}>
             <label style={labelStyle}>Autor <span style={asteriscoStyle}>*</span></label>
-            <input name="autor" type="text" value={formData.autor} onChange={handleChange} required style={inputStyle} placeholder="" />
+            <input name="autor" type="text" value={formData.autor} onChange={handleChange} required style={inputStyle} />
           </div>
           <div style={{ flex: '1 1 200px' }}>
             <label style={labelStyle}>Editora</label>
-            <input name="editora" type="text" value={formData.editora} onChange={handleChange} style={inputStyle} placeholder="" />
+            <input name="editora" type="text" value={formData.editora} onChange={handleChange} style={inputStyle} />
           </div>
         </div>
 
@@ -177,10 +173,10 @@ function CadastroItem({ usuario }) {
         </div>
 
         <label style={labelStyle}>URL da Imagem <span style={asteriscoStyle}>*</span></label>
-        <input name="imagem" type="text" value={formData.imagem} onChange={handleChange} style={inputStyle} placeholder="" />
+        <input name="imagem" type="text" value={formData.imagem} onChange={handleChange} style={inputStyle} />
 
         <label style={labelStyle}>Descrição <span style={asteriscoStyle}>*</span></label>
-        <textarea name="descricao" value={formData.descricao} onChange={handleChange} required rows="3" style={{...inputStyle, resize: 'vertical'}} placeholder=""></textarea>
+        <textarea name="descricao" value={formData.descricao} onChange={handleChange} required rows="3" style={{...inputStyle, resize: 'vertical'}}></textarea>
 
         {mensagem.texto && (
           <div style={{ 

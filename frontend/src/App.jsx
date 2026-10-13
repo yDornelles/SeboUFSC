@@ -76,6 +76,10 @@ function App() {
               setPropostaIdAlvo(id);
               setAbaAtiva('propostas');
             }}
+            onVerPerfil={(idDono) => { // <-- ADICIONADO AQUI: Permite abrir o perfil direto da notificação
+              setPerfilIdAlvo(idDono);
+              setAbaAtiva('perfil');
+            }}
           />
         );
       case 'editar':

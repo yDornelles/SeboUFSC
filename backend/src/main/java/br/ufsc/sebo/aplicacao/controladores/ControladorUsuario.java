@@ -2,6 +2,7 @@ package br.ufsc.sebo.aplicacao.controladores;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -64,6 +65,16 @@ public class ControladorUsuario {
         } catch (IllegalArgumentException e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return new RespostaUsuario(null, e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/deletar/{id}")
+    public ResponseEntity<RespostaUsuario> deletarUsuario(@PathVariable String id, HttpServletResponse response) {
+        try {
+            servico.deletarUsuario(id);
+            return ResponseEntity.ok(new RespostaUsuario(null, "Usuário deletado com sucesso!"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new RespostaUsuario(null, e.getMessage()));
         }
     }
 }

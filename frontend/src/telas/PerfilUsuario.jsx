@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { deleteUser } from 'firebase/auth';
+import { auth } from '../firebase';
 import CartaoItem from '../componentes/CartaoItem';
 import ModalItem from '../componentes/ModalItem'; 
 
@@ -79,15 +81,39 @@ export default function PerfilUsuario({ usuarioLogado, perfilId, onEditarItem, o
         })
       });
 
+      const dados = await response.json();
+
       if (!response.ok) {
-        const errText = await response.text();
-        throw new Error(errText || 'Erro ao atualizar perfil.');
+        throw new Error(dados.mensagem || 'Erro ao atualizar perfil.');
       }
 
-      const dados = await response.json();
       setMensagem(dados.mensagem || 'Perfil atualizado com sucesso!');
       setEditando(false);
       carregarDadosPerfil();
+    } catch (err) {
+      setErro(err.message);
+    }
+  };
+
+  const handleExcluirConta = async () => {
+    if (!window.confirm('Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita.')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:8080/api/usuarios/deletar/${idAlvo}`, {
+        method: 'DELETE'
+      });
+
+      const dados = await response.json();
+
+      if (!response.ok) {
+        throw new Error(dados.mensagem || 'Erro ao excluir conta no servidor.');
+      }
+
+      if (auth.currentUser) {
+        await deleteUser(auth.currentUser);
+      }
     } catch (err) {
       setErro(err.message);
     }
@@ -99,7 +125,6 @@ export default function PerfilUsuario({ usuarioLogado, perfilId, onEditarItem, o
   return (
     <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '20px', fontFamily: 'sans-serif' }}>
       
-      {/* SEÇÃO 1: Dados do Perfil */}
       <div style={{ backgroundColor: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', marginBottom: '30px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <h2 style={{ margin: 0, color: '#1f2937' }}>Perfil de @{usuario?.nomeUsuario}</h2>
@@ -136,15 +161,24 @@ export default function PerfilUsuario({ usuarioLogado, perfilId, onEditarItem, o
             <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '5px' }}>Nome de Usuário (@)</label>
             <input type="text" name="nomeUsuario" value={formData.nomeUsuario} onChange={handleChange} required style={inputStyle} />
             
-            <div style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
-              <button type="submit" style={{ backgroundColor: '#166534', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>Salvar</button>
-              <button type="button" onClick={() => setEditando(false)} style={{ backgroundColor: '#6b7280', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>Cancelar</button>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '15px' }}>
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <button type="submit" style={{ backgroundColor: '#166534', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>Salvar</button>
+                <button type="button" onClick={() => setEditando(false)} style={{ backgroundColor: '#6b7280', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>Cancelar</button>
+              </div>
+              
+              <button 
+                type="button" 
+                onClick={handleExcluirConta}
+                style={{ backgroundColor: '#dc2626', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
+              >
+                Excluir Conta
+              </button>
             </div>
           </form>
         )}
       </div>
 
-      {/* SEÇÃO 2: Meu Acervo */}
       <div style={{ backgroundColor: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', marginBottom: '30px' }}>
         <h3 style={{ marginTop: 0, color: '#1f2937', marginBottom: '20px' }}>Meu Acervo ({meusItens.length})</h3>
         
@@ -186,7 +220,6 @@ export default function PerfilUsuario({ usuarioLogado, perfilId, onEditarItem, o
         )}
       </div>
 
-      {/* SEÇÃO 3: Interesses */}
       <div style={{ backgroundColor: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
         <h3 style={{ marginTop: 0, color: '#1f2937', marginBottom: '20px' }}>Itens de Interesse ({interesses.length})</h3>
         

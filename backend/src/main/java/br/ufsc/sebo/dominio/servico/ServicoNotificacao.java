@@ -21,11 +21,15 @@ public class ServicoNotificacao {
     }
 
     public void criarNotificacao(Usuario destinatario, String mensagem) {
-        criarNotificacao(destinatario, mensagem, null);
+        criarNotificacao(destinatario, mensagem, null, null);
     }
 
     public void criarNotificacao(Usuario destinatario, String mensagem, Integer propostaId) {
-        Notificacao notificacao = new Notificacao(destinatario.getId(), mensagem, propostaId);
+        criarNotificacao(destinatario, mensagem, propostaId, null);
+    }
+
+    public void criarNotificacao(Usuario destinatario, String mensagem, Integer propostaId, String remetenteId) {
+        Notificacao notificacao = new Notificacao(destinatario.getId(), mensagem, propostaId, remetenteId);
         destinatario.adicionarNotificacao(notificacao);
         notificacoes.add(notificacao);
         servicoEmail.enviarEmail(destinatario.getEmail(), "Sebo UFSC - Nova notificação", mensagem);

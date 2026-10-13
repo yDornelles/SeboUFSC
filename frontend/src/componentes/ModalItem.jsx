@@ -35,6 +35,41 @@ export default function ModalItem({ item, onClose, usuarioLogado, onVerPerfil })
     return `R$ ${Number(valor).toFixed(2).replace('.', ',')}`;
   };
 
+  const formatarTipoMidia = (midia) => {
+    if (!midia) return '';
+    const mapa = {
+      LIVRO: 'Livro',
+      HQ: 'HQ',
+      MANGA: 'Mangá',
+      REVISTA: 'Revista',
+      CD: 'CD',
+      DVD: 'DVD',
+      VINIL: 'Vinil'
+    };
+    return mapa[midia] || midia.charAt(0) + midia.slice(1).toLowerCase();
+  };
+
+  const formatarConservacao = (conservacao) => {
+    if (!conservacao) return '';
+    const mapa = {
+      NOVO: 'Novo',
+      SEMI_NOVO: 'Seminovo',
+      USADO: 'Usado',
+      DANIFICADO: 'Danificado'
+    };
+    return mapa[conservacao] || conservacao.replace('_', ' ').toLowerCase();
+  };
+
+  const formatarOpcaoNegocio = (opcao) => {
+    if (!opcao) return '';
+    const mapa = {
+      SO_VENDA: 'Apenas Venda',
+      SO_TROCA: 'Apenas Troca',
+      TROCA_E_VENDA: 'Troca e Venda'
+    };
+    return mapa[opcao] || opcao.replace('_', ' ').toLowerCase();
+  };
+
   const handleToggleInteresse = async () => {
     if (!idUsuarioAtual) {
       setMensagem({ texto: 'Você precisa estar logado para gerenciar interesses.', erro: true });
@@ -119,15 +154,15 @@ export default function ModalItem({ item, onClose, usuarioLogado, onVerPerfil })
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '20px', backgroundColor: '#f9fafb', padding: '15px', borderRadius: '8px' }}>
               <div>
                 <span style={labelStyle}>Mídia</span>
-                <span style={valorStyle}>{item.tipoMidia}</span>
+                <span style={valorStyle}>{formatarTipoMidia(item.tipoMidia)}</span>
               </div>
               <div>
                 <span style={labelStyle}>Conservação</span>
-                <span style={valorStyle}>{item.estadoConservacao.replace('_', ' ')}</span>
+                <span style={valorStyle}>{formatarConservacao(item.estadoConservacao)}</span>
               </div>
               <div>
                 <span style={labelStyle}>Negociação</span>
-                <span style={valorStyle}>{item.opcaoNegocio.replace('_', ' ')}</span>
+                <span style={valorStyle}>{formatarOpcaoNegocio(item.opcaoNegocio)}</span>
               </div>
               <div>
                 <span style={labelStyle}>Preço</span>

@@ -54,6 +54,12 @@ public class ServicoUsuario {
         usuario.setNomeUsuario(nomeUsuario);
         return usuario;
     }
+
+    public void deletarUsuario(String id) { 
+        Usuario usuario = buscarPorId(id);
+        bancoDeDadosFalsoUsuario.remove(usuario);
+    }
+
     public List<Usuario> listarTodosUsuarios() {
         return bancoDeDadosFalsoUsuario;
     }
