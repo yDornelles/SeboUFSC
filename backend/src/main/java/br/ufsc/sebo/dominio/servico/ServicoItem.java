@@ -56,4 +56,11 @@ public class ServicoItem {
                 .filter(item -> item.getStatus() == StatusItem.DISPONIVEL)
                 .collect(Collectors.toList());
     }
+
+    public Item buscarPorId(String id) {
+        return catalogo.getItensAcervo().stream()
+            .filter(i -> i.getId().equals(id))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Item não encontrado."));
+    }
 }

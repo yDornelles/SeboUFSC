@@ -6,6 +6,7 @@ import CadastroItem from './telas/CadastroItem';
 import ListaItens from './telas/ListaItens';
 import LoginUsuario from './telas/LoginUsuario';
 import CadastroUsuario from './telas/CadastroUsuario';
+import PerfilUsuario from './telas/PerfilUsuario';
 
 function App() {
   const [usuario, setUsuario] = useState(null);
@@ -33,6 +34,8 @@ function App() {
     switch (abaAtiva) {
       case 'cadastro':
         return <CadastroItem usuario={usuario} />;
+      case 'perfil':
+        return <PerfilUsuario usuarioLogado={usuario} />;
       case 'lista':
       default:
         return <ListaItens usuario={usuario} />;
@@ -93,7 +96,8 @@ function App() {
   // 2. SE O USUÁRIO ESTIVER LOGADO: Exibe o sistema principal
   const botoesAba = [
     { id: 'lista', titulo: 'Catálogo' },
-    { id: 'cadastro', titulo: 'Cadastrar Item' }
+    { id: 'cadastro', titulo: 'Cadastrar Item' },
+    { id: 'perfil', titulo: 'Meu Perfil' }
   ];
 
   return (

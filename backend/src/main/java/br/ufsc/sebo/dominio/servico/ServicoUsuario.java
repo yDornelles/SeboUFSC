@@ -39,4 +39,19 @@ public class ServicoUsuario {
 
         return novoUsuario;
     }
+
+    public Usuario buscarPorId(String id) {
+        return bancoDeDadosFalsoUsuario.stream()
+            .filter(u -> u.getId().equals(id))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado."));
+    }
+
+    public Usuario atualizarUsuario(String id, String nome, String sobrenome, String nomeUsuario) {
+        Usuario usuario = buscarPorId(id);
+        usuario.setNome(nome);
+        usuario.setSobrenome(sobrenome);
+        usuario.setNomeUsuario(nomeUsuario);
+        return usuario;
+}
 }
