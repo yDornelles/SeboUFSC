@@ -8,6 +8,9 @@ import LoginUsuario from './telas/LoginUsuario';
 import CadastroUsuario from './telas/CadastroUsuario';
 import PerfilUsuario from './telas/PerfilUsuario';
 import EditarItem from './telas/EditarItem'; 
+import Propostas from './telas/Propostas';
+import Notificacoes from './telas/Notificacoes';
+import useContadores from './hooks/useContadores';
 
 function App() {
   const [usuario, setUsuario] = useState(null);
@@ -16,6 +19,10 @@ function App() {
   const [abaAuth, setAbaAuth] = useState('login'); // 'login' ou 'cadastro'
   const [itemParaEditar, setItemParaEditar] = useState(null); 
   const [perfilIdAlvo, setPerfilIdAlvo] = useState(null); 
+  const [propostaIdAlvo, setPropostaIdAlvo] = useState(null);
+
+  // Selos das abas: notificações não lidas e propostas aguardando resposta do usuário
+  const { naoLidas, pendentes, recarregar: recarregarContadores } = useContadores(usuario?.uid);
 
   // Monitora o estado da autenticação no Firebase
   useEffect(() => {
@@ -49,6 +56,25 @@ function App() {
             onVerPerfil={(idDono) => {
               setPerfilIdAlvo(idDono);
               setAbaAtiva('perfil');
+            }}
+          />
+        );
+      case 'propostas':
+        return (
+          <Propostas
+            usuario={usuario}
+            propostaIdAlvo={propostaIdAlvo}
+            onAtualizar={recarregarContadores}
+          />
+        );
+      case 'notificacoes':
+        return (
+          <Notificacoes
+            usuario={usuario}
+            onAtualizar={recarregarContadores}
+            onAbrirProposta={(id) => {
+              setPropostaIdAlvo(id);
+              setAbaAtiva('propostas');
             }}
           />
         );
@@ -132,6 +158,8 @@ function App() {
   const botoesAba = [
     { id: 'lista', titulo: 'Catálogo' },
     { id: 'cadastro', titulo: 'Cadastrar Item' },
+    { id: 'propostas', titulo: 'Propostas', selo: pendentes },
+    { id: 'notificacoes', titulo: 'Notificações', selo: naoLidas },
     { id: 'perfil', titulo: 'Meu Perfil' }
   ];
 
@@ -141,14 +169,17 @@ function App() {
       minHeight: '100vh',
       padding: '40px 20px',
     }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', maxWidth: '800px', margin: '0 auto 30px auto' }}>
-        <nav style={{ display: 'flex', gap: '10px', fontFamily: 'sans-serif' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', maxWidth: '800px', margin: '0 auto 30px auto', gap: '10px', flexWrap: 'wrap' }}>
+        <nav style={{ display: 'flex', gap: '10px', fontFamily: 'sans-serif', flexWrap: 'wrap' }}>
           {botoesAba.map((aba) => (
             <button
               key={aba.id}
               onClick={() => {
                 if (aba.id === 'perfil') {
                   setPerfilIdAlvo(null);
+                }
+                if (aba.id === 'propostas') {
+                  setPropostaIdAlvo(null);
                 }
                 setAbaAtiva(aba.id);
                 setItemParaEditar(null);
@@ -166,6 +197,18 @@ function App() {
               }}
             >
               {aba.titulo}
+              {aba.selo > 0 && (
+                <span style={{
+                  marginLeft: '8px',
+                  backgroundColor: '#dc2626',
+                  color: 'white',
+                  borderRadius: '999px',
+                  padding: '2px 8px',
+                  fontSize: '12px',
+                }}>
+                  {aba.selo}
+                </span>
+              )}
             </button>
           ))}
         </nav>
