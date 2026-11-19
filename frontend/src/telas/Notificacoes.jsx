@@ -53,7 +53,10 @@ export default function Notificacoes({ usuario, onAtualizar, onAbrirProposta, on
 
   const abrirProposta = async (notificacao) => {
     await marcarComoLida(notificacao);
-    onAbrirProposta(notificacao.propostaId);
+    const propostaId = notificacao.proposta?.idProposta ?? notificacao.propostaId;
+    if (propostaId != null) {
+      onAbrirProposta?.(propostaId);
+    }
   };
 
   const verPerfilUsuario = async (notificacao, idUsuarioAlvo) => {
@@ -91,8 +94,13 @@ export default function Notificacoes({ usuario, onAtualizar, onAbrirProposta, on
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         {notificacoes.map((n) => {
-          // Substitua 'remetenteId' pelo nome exato do campo que envia o ID do usuário no seu DTO de notificação do Java
-          const idRemetente = n.remetenteId || n.usuarioOrigemId; 
+          const idRemetente =
+            n.remetente?.id ||
+            n.remetente?.uid ||
+            n.remetenteId ||
+            n.usuarioOrigemId;
+
+          const propostaId = n.proposta?.idProposta ?? n.propostaId;
 
           return (
             <div
@@ -108,10 +116,10 @@ export default function Notificacoes({ usuario, onAtualizar, onAbrirProposta, on
               }}
             >
               <p style={{ margin: 0, color: '#1f2937', fontWeight: n.lida ? 'normal' : 'bold' }}>{n.mensagem}</p>
-              
+
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '12px', gap: '10px', flexWrap: 'wrap' }}>
                 <span style={{ fontSize: '12px', color: '#6b7280' }}>{formatarData(n.dataEnvio)}</span>
-                
+
                 <div style={{ display: 'flex', gap: '8px' }}>
                   {idRemetente && (
                     <button
@@ -122,7 +130,7 @@ export default function Notificacoes({ usuario, onAtualizar, onAbrirProposta, on
                     </button>
                   )}
 
-                  {n.propostaId != null && (
+                  {propostaId != null && (
                     <button
                       onClick={(e) => { e.stopPropagation(); abrirProposta(n); }}
                       style={{ backgroundColor: '#1d4ed8', color: 'white', border: 'none', borderRadius: '6px', padding: '6px 12px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer' }}

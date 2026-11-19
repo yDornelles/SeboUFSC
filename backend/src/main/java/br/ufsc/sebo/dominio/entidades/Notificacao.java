@@ -1,35 +1,44 @@
 package br.ufsc.sebo.dominio.entidades;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.util.Date;
+import br.ufsc.sebo.dominio.entidades.proposta.Proposta;
 
 public class Notificacao {
 
     private static int proximoId = 1;
 
     private Integer idNotificacao;
-    private String usuarioId;
-    private String remetenteId;
+
+    @JsonIgnore
+    private Usuario destinatario;
+    @JsonIgnoreProperties({"notificacoes", "itensInteresse"})
+    private Usuario remetente;
+    @JsonIgnoreProperties({"participantes", "aceites"})
+    
+    private Proposta proposta;
     private String mensagem;
     private boolean lida;
     private Date dataEnvio;
-    private Integer propostaId;
 
-    public Notificacao(String usuarioId, String mensagem) {
-        this(usuarioId, mensagem, null, null);
+    public Notificacao(Usuario destinatario, String mensagem) {
+        this(destinatario, mensagem, null, null);
     }
 
-    public Notificacao(String usuarioId, String mensagem, Integer propostaId) {
-        this(usuarioId, mensagem, propostaId, null);
+    public Notificacao(Usuario destinatario, String mensagem, Proposta proposta) {
+        this(destinatario, mensagem, proposta, null);
     }
 
-    public Notificacao(String usuarioId, String mensagem, Integer propostaId, String remetenteId) {
+    public Notificacao(Usuario destinatario, String mensagem, Proposta proposta, Usuario remetente) {
         this.idNotificacao = proximoId++;
-        this.usuarioId = usuarioId;
+        this.destinatario = destinatario;
         this.mensagem = mensagem;
+        this.proposta = proposta;
+        this.remetente = remetente;
         this.lida = false;
         this.dataEnvio = new Date();
-        this.propostaId = propostaId;
-        this.remetenteId = remetenteId;
     }
 
     public void marcarComoLida() {
@@ -37,10 +46,10 @@ public class Notificacao {
     }
 
     public Integer getIdNotificacao() { return idNotificacao; }
-    public String getUsuarioId() { return usuarioId; }
-    public String getRemetenteId() { return remetenteId; } 
+    public Usuario getDestinatario() { return destinatario; }
+    public Usuario getRemetente() { return remetente; }
+    public Proposta getProposta() { return proposta; }
     public String getMensagem() { return mensagem; }
     public boolean isLida() { return lida; }
     public Date getDataEnvio() { return dataEnvio; }
-    public Integer getPropostaId() { return propostaId; }
 }

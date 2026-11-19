@@ -7,9 +7,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.ufsc.sebo.dominio.entidades.Mensagem;
+import br.ufsc.sebo.dominio.entidades.Usuario;
 import br.ufsc.sebo.dominio.servico.ServicoChat;
+import br.ufsc.sebo.dominio.servico.ServicoUsuario;
 
 @RestController
 @RequestMapping("/api/chats")
@@ -17,18 +21,24 @@ import br.ufsc.sebo.dominio.servico.ServicoChat;
 public class ControladorChat {
 
     private final ServicoChat servicoChat;
+    private final ServicoUsuario servicoUsuario;
 
-    public ControladorChat(ServicoChat servicoChat) {
+    public ControladorChat(ServicoChat servicoChat, ServicoUsuario servicoUsuario) {
         this.servicoChat = servicoChat;
+        this.servicoUsuario = servicoUsuario;
     }
 
     @PostMapping("/{chatId}/mensagens")
-    public void enviarMensagem(@PathVariable Integer chatId, String usuarioId, String msg) {
-        throw new UnsupportedOperationException();
+    public void enviarMensagem(
+            @PathVariable Integer chatId,
+            @RequestParam String usuarioId,
+            @RequestParam String msg) {
+        Usuario usuario = servicoUsuario.buscarPorId(usuarioId);
+        servicoChat.enviarMensagem(chatId, usuario, msg);
     }
 
     @GetMapping("/{chatId}/historico")
-    public List<String> carregarHistorico(@PathVariable Integer chatId) {
-        throw new UnsupportedOperationException();
+    public List<Mensagem> carregarHistorico(@PathVariable Integer chatId) {
+        return servicoChat.carregarHistorico(chatId);
     }
 }
