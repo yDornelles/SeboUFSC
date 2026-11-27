@@ -1,5 +1,7 @@
 package br.ufsc.sebo.dominio.entidades;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +15,9 @@ public class Usuario {
     private String email;
     private List<Item> itensCadastrados;
     private List<Item> itensInteresse;
-    private List<Notificacao> notificacoes;
+
+    @JsonIgnore
+    private List<Notificacao> notificacoes; 
 
     public Usuario() {
 
