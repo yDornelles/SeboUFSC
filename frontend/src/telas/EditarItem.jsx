@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import Botao from '../componentes/Botao';
 
 function EditarItem({ usuario, itemId, onVoltar }) {
   const [formData, setFormData] = useState({
@@ -15,7 +14,7 @@ function EditarItem({ usuario, itemId, onVoltar }) {
     imagem: ''
   });
 
-  const [mensagem, setMensagem] = useState({ texto: 'Carregando dados do item...', erro: false });
+  const [mensagem, setMensagem] = useState({ texto: '', erro: false });
 
   useEffect(() => {
     const carregarItem = async () => {
@@ -98,12 +97,19 @@ function EditarItem({ usuario, itemId, onVoltar }) {
         body: JSON.stringify(payload)
       });
 
-      if (!resposta.ok) {
-        throw new Error("Erro ao atualizar. Verifique se o servidor Java está rodando.");
+      const respostaTexto = await resposta.text();
+      let dados;
+      try {
+        dados = JSON.parse(respostaTexto);
+      } catch {
+        dados = { mensagem: respostaTexto };
       }
 
-      const dados = await resposta.json();
-      setMensagem({ texto: `✅ ${dados.mensagem}`, erro: false });
+      if (!resposta.ok) {
+        throw new Error(dados.mensagem || respostaTexto || 'Erro ao atualizar o item.');
+      }
+
+      setMensagem({ texto: `✅ ${dados.mensagem || 'Item atualizado com sucesso!'}`, erro: false });
 
       setTimeout(() => {
         onVoltar();
@@ -113,7 +119,6 @@ function EditarItem({ usuario, itemId, onVoltar }) {
       setMensagem({ texto: `❌ ${erro.message}`, erro: true });
     }
   };
-
   const inputStyle = { width: '100%', padding: '10px', marginBottom: '15px', border: '1px solid #ccc', borderRadius: '6px', boxSizing: 'border-box', fontSize: '15px' };
   const labelStyle = { display: 'block', fontWeight: 'bold', marginBottom: '5px', color: '#374151' };
   const asteriscoStyle = { color: '#dc2626' };
@@ -203,7 +208,7 @@ function EditarItem({ usuario, itemId, onVoltar }) {
         <label style={labelStyle}>Descrição <span style={asteriscoStyle}>*</span></label>
         <textarea name="descricao" value={formData.descricao} onChange={handleChange} required rows="3" style={{...inputStyle, resize: 'vertical'}}></textarea>
 
-{mensagem.texto && (
+        {mensagem.texto && (
           <div style={{ 
             padding: '12px', marginBottom: '15px', borderRadius: '6px', textAlign: 'center', fontWeight: 'bold',
             backgroundColor: mensagem.erro ? '#fee2e2' : '#dcfce7',
@@ -213,19 +218,13 @@ function EditarItem({ usuario, itemId, onVoltar }) {
           </div>
         )}
 
-        <div style={{ display: 'flex', gap: '15px', marginTop: '20px' }}>
+        <div style={{ display: 'flex', gap: '15px' }}>
           <button 
             type="submit" 
             style={{ 
-              flex: 1, 
-              backgroundColor: '#1d4ed8', 
-              color: 'white', 
-              border: 'none', 
-              padding: '12px', 
-              borderRadius: '6px', 
-              cursor: 'pointer', 
-              fontWeight: 'bold', 
-              fontSize: '16px' 
+              flex: 1, backgroundColor: '#1d4ed8', color: 'white', 
+              border: 'none', padding: '12px', borderRadius: '6px', 
+              cursor: 'pointer', fontWeight: 'bold', fontSize: '16px' 
             }}
           >
             Salvar Alterações
@@ -235,15 +234,9 @@ function EditarItem({ usuario, itemId, onVoltar }) {
             type="button" 
             onClick={onVoltar} 
             style={{ 
-              flex: 1, 
-              backgroundColor: '#6b7280', 
-              color: 'white', 
-              border: 'none', 
-              padding: '12px', 
-              borderRadius: '6px', 
-              cursor: 'pointer', 
-              fontWeight: 'bold', 
-              fontSize: '16px' 
+              flex: 1, backgroundColor: '#6b7280', color: 'white', 
+              border: 'none', padding: '12px', borderRadius: '6px', 
+              cursor: 'pointer', fontWeight: 'bold', fontSize: '16px' 
             }}
           >
             Cancelar Edição

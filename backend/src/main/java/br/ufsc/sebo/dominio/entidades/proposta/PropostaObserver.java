@@ -5,5 +5,5 @@ package br.ufsc.sebo.dominio.entidades.proposta;
  * (ServicoChat, ServicoNotificacao, ServicoEmail) implementa esta interface.
  */
 public interface PropostaObserver {
-    void onPropostaAtualizada(Proposta p);
+    void onPropostaAtualizada(Proposta proposta);
 }

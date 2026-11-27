@@ -8,11 +8,11 @@ public class Mensagem {
     private Date dataHora;
     private Usuario remetente;
 
-    public Mensagem(Integer idMensagem, String texto, Usuario remetente) {
+    public Mensagem(Integer idMensagem, String texto, Date dataHora, Usuario remetente) {
         this.idMensagem = idMensagem;
         this.texto = texto;
+        this.dataHora = dataHora;
         this.remetente = remetente;
-        this.dataHora = new Date();
     }
 
     public Integer getIdMensagem() { return idMensagem; }

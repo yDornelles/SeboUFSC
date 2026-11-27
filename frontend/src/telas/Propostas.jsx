@@ -130,7 +130,7 @@ export default function Propostas({ usuario, propostaIdAlvo, onAtualizar, onAbri
             enviando={enviandoId === p.id}
             destacada={p.id === propostaIdAlvo}
             onResponder={(aceite) => responder(p, aceite)}
-            onAbrirChat={() => onAbrirChat?.(p.id)}
+            onAbrirChat={() => onAbrirChat?.(p.chatId)}
           />
         ))}
       </div>

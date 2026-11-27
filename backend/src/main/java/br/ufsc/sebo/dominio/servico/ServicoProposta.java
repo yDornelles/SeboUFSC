@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import br.ufsc.sebo.dominio.entidades.Usuario;
 import br.ufsc.sebo.dominio.entidades.item.Item;
-import br.ufsc.sebo.dominio.entidades.item.StatusItem;
 import br.ufsc.sebo.dominio.entidades.proposta.Proposta;
 import br.ufsc.sebo.dominio.entidades.proposta.PropostaObserver;
 import br.ufsc.sebo.dominio.entidades.proposta.StatusProposta;
@@ -25,14 +24,11 @@ public class ServicoProposta {
     private final List<Proposta> propostas = new ArrayList<>();
     private final ServicoItem servicoItem;
     private final ServicoUsuario servicoUsuario;
-    private final ServicoNotificacao servicoNotificacao;
     private final List<PropostaObserver> observadores;
 
-    public ServicoProposta(ServicoItem servicoItem, ServicoUsuario servicoUsuario, ServicoNotificacao servicoNotificacao,
-                           List<PropostaObserver> observadores) {
+    public ServicoProposta(ServicoItem servicoItem, ServicoUsuario servicoUsuario, List<PropostaObserver> observadores) {
         this.servicoItem = servicoItem;
         this.servicoUsuario = servicoUsuario;
-        this.servicoNotificacao = servicoNotificacao;
         this.observadores = observadores;
     }
 
@@ -54,14 +50,14 @@ public class ServicoProposta {
 
         Proposta proposta = new Proposta(proximoId++, new Date(), StatusProposta.AGUARDANDO_CONFIRMACAO,
             itensEnvolvidos, participantes, null);
-        observadores.forEach(proposta::adicionarObservador);
+        
+        if (observadores != null) {
+            observadores.forEach(proposta::adicionarObservador);
+        }
+
         propostas.add(proposta);
 
-        for (Usuario participante : participantes) {
-            servicoNotificacao.criarNotificacao(participante,
-                "Uma nova proposta de troca envolvendo um item seu foi criada. Acesse Propostas para revisar os itens e confirmar.",
-                proposta.getIdProposta());
-        }
+        proposta.notificarObservadores();
 
         return proposta;
     }
@@ -70,40 +66,13 @@ public class ServicoProposta {
         Proposta proposta = buscarPorId(propostaId);
         Usuario usuario = servicoUsuario.buscarPorId(usuarioId);
 
-        boolean participante = proposta.getParticipantes().stream()
-            .anyMatch(p -> p.getId().equals(usuario.getId()));
-        if (!participante) {
-            throw new IllegalArgumentException("Você não faz parte desta proposta.");
+        if (aceite) {
+            proposta.aceitar(usuario);
+        } else {
+            proposta.recusar(usuario);
         }
 
-        if (proposta.getStatus() != StatusProposta.AGUARDANDO_CONFIRMACAO) {
-            String situacao = proposta.getStatus() == StatusProposta.CONFIRMADA ? "confirmada" : "cancelada";
-            throw new IllegalArgumentException("Esta proposta já foi " + situacao + " e não pode mais ser respondida.");
-        }
-
-        if (!aceite) {
-            proposta.setStatus(StatusProposta.CANCELADA);
-            notificarParticipantes(proposta,
-                "A proposta de troca foi recusada por " + usuario.getNomeUsuario() + " e foi cancelada.");
-            return proposta;
-        }
-
-        boolean todosDisponiveis = proposta.getItens().stream()
-            .allMatch(i -> i.getStatus() == StatusItem.DISPONIVEL);
-        if (!todosDisponiveis) {
-            proposta.setStatus(StatusProposta.CANCELADA);
-            notificarParticipantes(proposta,
-                "A proposta de troca foi cancelada porque um dos itens não está mais disponível.");
-            throw new IllegalArgumentException(
-                "Um dos itens desta proposta não está mais disponível. A proposta foi cancelada.");
-        }
-
-        proposta.registrarAceite(usuario);
-
-        if (proposta.verificarAceites()) {
-            proposta.setStatus(StatusProposta.CONFIRMADA);
-            proposta.getItens().forEach(i -> i.setStatus(StatusItem.RESERVADO_PARA_TROCA));
-            notificarParticipantes(proposta, "Todos os participantes aceitaram! A proposta de troca foi confirmada.");
+        if (proposta.getStatus() == StatusProposta.CONFIRMADA) {
             cancelarPendentesConflitantes(proposta);
         }
 
@@ -122,12 +91,6 @@ public class ServicoProposta {
             .filter(p -> p.getParticipantes().stream().anyMatch(u -> u.getId().equals(usuarioId)))
             .sorted(Comparator.comparing(Proposta::getIdProposta).reversed())
             .collect(Collectors.toList());
-    }
-
-    private void notificarParticipantes(Proposta proposta, String mensagem) {
-        for (Usuario participante : proposta.getParticipantes()) {
-            servicoNotificacao.criarNotificacao(participante, mensagem, proposta.getIdProposta());
-        }
     }
 
     private Proposta buscarPendenteComMesmosItens(List<Item> itens) {
@@ -149,9 +112,7 @@ public class ServicoProposta {
             }
             boolean usaItemReservado = outra.getItens().stream().anyMatch(i -> idsConfirmados.contains(i.getId()));
             if (usaItemReservado) {
-                outra.setStatus(StatusProposta.CANCELADA);
-                notificarParticipantes(outra,
-                    "A proposta de troca foi cancelada porque um dos itens foi usado em outra troca confirmada.");
+                outra.recusar(outra.getParticipantes().get(0));
             }
         }
     }

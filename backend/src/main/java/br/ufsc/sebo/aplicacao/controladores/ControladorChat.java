@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.ufsc.sebo.aplicacao.dto.RespostaErro;
+import br.ufsc.sebo.aplicacao.dto.chat.RespostaChat;
 import br.ufsc.sebo.aplicacao.dto.chat.RespostaMensagem;
 import br.ufsc.sebo.aplicacao.dto.chat.SolicitaFinalizacao;
 import br.ufsc.sebo.aplicacao.dto.chat.SolicitaMensagem;
@@ -32,6 +33,25 @@ public class ControladorChat {
     public ControladorChat(ServicoChat servicoChat, ServicoUsuario servicoUsuario) {
         this.servicoChat = servicoChat;
         this.servicoUsuario = servicoUsuario;
+    }
+
+    // Extra: aba "Chat" lista todas as conversas de que o usuário participa
+    @GetMapping("/usuario/{usuarioId}")
+    public List<RespostaChat> listarChatsDoUsuario(@PathVariable String usuarioId) {
+        return servicoChat.listarPorUsuario(usuarioId).stream()
+            .map(c -> RespostaChat.de(c, servicoChat.buscarPropostaDoChat(c.getIdChat()), servicoUsuario))
+            .collect(Collectors.toList());
+    }
+
+    // Extra: detalhes de uma conversa (itens, participantes, status)
+    @GetMapping("/{chatId}")
+    public ResponseEntity<?> buscarChat(@PathVariable Integer chatId) {
+        try {
+            return ResponseEntity.ok(RespostaChat.de(servicoChat.buscarPorId(chatId),
+                servicoChat.buscarPropostaDoChat(chatId), servicoUsuario));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(404).body(new RespostaErro(e.getMessage()));
+        }
     }
 
     @PostMapping("/{chatId}/mensagens")
@@ -56,6 +76,7 @@ public class ControladorChat {
         }
     }
 
+    // Extra em relação ao diagrama: opção para o vendedor/trocador finalizar a transação (US 2)
     @PutMapping("/{chatId}/finalizar")
     public ResponseEntity<?> finalizarTransacao(@PathVariable Integer chatId, @Valid @RequestBody SolicitaFinalizacao req) {
         try {

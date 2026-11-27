@@ -1,9 +1,11 @@
 package br.ufsc.sebo.dominio.servico;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -26,6 +28,7 @@ public class ServicoChat implements PropostaObserver {
     private static int proximoId = 1;
 
     private final List<Chat> chats = new ArrayList<>();
+    // "banco de dados falso": proposta a que cada chat pertence (no banco será Chat.ID_PROPOSTA)
     private final Map<Integer, Proposta> propostasPorChat = new HashMap<>();
 
     public synchronized void enviarMensagem(Integer chatId, Usuario u, String msg) {
@@ -43,6 +46,23 @@ public class ServicoChat implements PropostaObserver {
             .orElseThrow(() -> new IllegalArgumentException("Chat não encontrado."));
     }
 
+    // Extra: usado pela aba "Chat" para listar as conversas de um usuário (mais recentes primeiro)
+    public synchronized List<Chat> listarPorUsuario(String usuarioId) {
+        return chats.stream()
+            .filter(c -> c.getParticipantes().stream().anyMatch(u -> u.getId().equals(usuarioId)))
+            .sorted(Comparator.comparing(Chat::getIdChat).reversed())
+            .collect(Collectors.toList());
+    }
+
+    public synchronized Proposta buscarPropostaDoChat(Integer chatId) {
+        buscarPorId(chatId);
+        return propostasPorChat.get(chatId);
+    }
+
+    /**
+     * Finaliza a negociação: marca os itens como TROCADO/VENDIDO e encerra o chat.
+     * Só quem entrega algum item da proposta (vendedor ou trocador) pode finalizar.
+     */
     public synchronized void finalizarTransacao(Integer chatId, Usuario u) {
         Chat chat = buscarPorId(chatId);
         Proposta proposta = propostasPorChat.get(chatId);
@@ -68,15 +88,16 @@ public class ServicoChat implements PropostaObserver {
     }
 
     @Override
-    public synchronized void onPropostaAtualizada(Proposta p) {
-        Chat chat = p.getChatSessao();
+    public synchronized void onPropostaAtualizada(Proposta proposta) {
+        StatusProposta status = proposta.getStatus();
+        Chat chat = proposta.getChatSessao();
 
-        if (p.getStatus() == StatusProposta.CONFIRMADA && chat == null) {
-            Chat novo = new Chat(proximoId++, p.getParticipantes());
+        if (status == StatusProposta.CONFIRMADA && chat == null) {
+            Chat novo = new Chat(proximoId++, Chat.ATIVO, proposta.getParticipantes());
             chats.add(novo);
-            propostasPorChat.put(novo.getIdChat(), p);
-            p.setChatSessao(novo);
-        } else if (p.getStatus() == StatusProposta.CANCELADA && chat != null) {
+            propostasPorChat.put(novo.getIdChat(), proposta);
+            proposta.setChatSessao(novo);
+        } else if (status == StatusProposta.CANCELADA && chat != null) {
             chat.encerrarChat();
         }
     }

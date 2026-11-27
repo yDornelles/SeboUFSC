@@ -11,6 +11,7 @@ import EditarItem from './telas/EditarItem';
 import Propostas from './telas/Propostas';
 import Notificacoes from './telas/Notificacoes';
 import Chat from './telas/Chat';
+import ConversaChat from './telas/ConversaChat';
 import useContadores from './hooks/useContadores';
 
 function App() {
@@ -21,7 +22,7 @@ function App() {
   const [itemParaEditar, setItemParaEditar] = useState(null); 
   const [perfilIdAlvo, setPerfilIdAlvo] = useState(null); 
   const [propostaIdAlvo, setPropostaIdAlvo] = useState(null);
-  const [propostaIdChat, setPropostaIdChat] = useState(null);
+  const [chatIdAlvo, setChatIdAlvo] = useState(null);
 
   // Selos das abas: notificações não lidas e propostas aguardando resposta do usuário
   const { naoLidas, pendentes, recarregar: recarregarContadores } = useContadores(usuario?.uid);
@@ -67,22 +68,24 @@ function App() {
             usuario={usuario}
             propostaIdAlvo={propostaIdAlvo}
             onAtualizar={recarregarContadores}
-            onAbrirChat={(id) => {
-              setPropostaIdChat(id);
+            onAbrirChat={(chatId) => {
+              setChatIdAlvo(chatId);
               setAbaAtiva('chat');
             }}
           />
         );
       case 'chat':
-        return (
+        return chatIdAlvo != null ? (
+          <ConversaChat
+            usuario={usuario}
+            chatId={chatIdAlvo}
+            onVoltar={() => setChatIdAlvo(null)}
+            onAtualizar={recarregarContadores}
+          />
+        ) : (
           <Chat
             usuario={usuario}
-            propostaId={propostaIdChat}
-            onVoltar={() => {
-              setPropostaIdAlvo(propostaIdChat);
-              setAbaAtiva('propostas');
-            }}
-            onAtualizar={recarregarContadores}
+            onAbrirChat={(chatId) => setChatIdAlvo(chatId)}
           />
         );
       case 'notificacoes':
@@ -93,6 +96,10 @@ function App() {
             onAbrirProposta={(id) => {
               setPropostaIdAlvo(id);
               setAbaAtiva('propostas');
+            }}
+            onVerPerfil={(idDono) => { // <-- ADICIONADO AQUI: Permite abrir o perfil direto da notificação
+              setPerfilIdAlvo(idDono);
+              setAbaAtiva('perfil');
             }}
           />
         );
@@ -177,6 +184,7 @@ function App() {
     { id: 'lista', titulo: 'Catálogo' },
     { id: 'cadastro', titulo: 'Cadastrar Item' },
     { id: 'propostas', titulo: 'Propostas', selo: pendentes },
+    { id: 'chat', titulo: 'Chat' },
     { id: 'notificacoes', titulo: 'Notificações', selo: naoLidas },
     { id: 'perfil', titulo: 'Meu Perfil' }
   ];
@@ -198,6 +206,9 @@ function App() {
                 }
                 if (aba.id === 'propostas') {
                   setPropostaIdAlvo(null);
+                }
+                if (aba.id === 'chat') {
+                  setChatIdAlvo(null);
                 }
                 setAbaAtiva(aba.id);
                 setItemParaEditar(null);

@@ -28,7 +28,7 @@ public class ServicoItem {
         EstadoConservacao estadoConservacao, OpcaoNegocio opcaoNegocio, 
         double preco, String descricao, String imagem) {
 
-        validarRegrasDeNegocio(opcaoNegocio, preco);
+        validarRegrasDeNegocio(opcaoNegocio, preco, descricao);
 
         if (status != StatusItem.DISPONIVEL) {
             throw new IllegalArgumentException("Um novo item não pode ser cadastrado com status diferente de DISPONIVEL.");
@@ -53,7 +53,7 @@ public class ServicoItem {
             throw new IllegalArgumentException("Acesso negado: Você só pode editar os seus próprios itens.");
         }
 
-        validarRegrasDeNegocio(opcaoNegocio, preco);
+        validarRegrasDeNegocio(opcaoNegocio, preco, descricao);
 
         itemExistente.setTitulo(titulo);
         itemExistente.setTipoMidia(tipoMidia);
@@ -70,7 +70,7 @@ public class ServicoItem {
         return itemExistente;
     }
 
-    private void validarRegrasDeNegocio(OpcaoNegocio opcaoNegocio, double preco) {
+    private void validarRegrasDeNegocio(OpcaoNegocio opcaoNegocio, double preco, String descricao) {
         if (opcaoNegocio == OpcaoNegocio.SO_TROCA && preco > 0) {
             throw new IllegalArgumentException("Preço deve ser zero para itens de troca.");
         }
@@ -81,6 +81,10 @@ public class ServicoItem {
 
         if (preco > 500.00) {
             throw new IllegalArgumentException("O valor máximo permitido na plataforma do Sebo é de R$ 500,00.");
+        }
+
+        if (descricao == null || descricao.trim().length() < 10) {
+            throw new IllegalArgumentException("A descrição do item deve conter no mínimo 10 caracteres.");
         }
     }
 

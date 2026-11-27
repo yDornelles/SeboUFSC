@@ -4,6 +4,7 @@ C:\Users\manue\OneDrive\Desktop\sebo\SeboUFSC\backend\src\main\java\br\ufsc\sebo
 C:\Users\manue\OneDrive\Desktop\sebo\SeboUFSC\backend\src\main\java\br\ufsc\sebo\aplicacao\controladores\ControladorNotificacao.java
 C:\Users\manue\OneDrive\Desktop\sebo\SeboUFSC\backend\src\main\java\br\ufsc\sebo\aplicacao\controladores\ControladorProposta.java
 C:\Users\manue\OneDrive\Desktop\sebo\SeboUFSC\backend\src\main\java\br\ufsc\sebo\aplicacao\controladores\ControladorUsuario.java
+C:\Users\manue\OneDrive\Desktop\sebo\SeboUFSC\backend\src\main\java\br\ufsc\sebo\aplicacao\dto\chat\RespostaChat.java
 C:\Users\manue\OneDrive\Desktop\sebo\SeboUFSC\backend\src\main\java\br\ufsc\sebo\aplicacao\dto\chat\RespostaMensagem.java
 C:\Users\manue\OneDrive\Desktop\sebo\SeboUFSC\backend\src\main\java\br\ufsc\sebo\aplicacao\dto\chat\SolicitaFinalizacao.java
 C:\Users\manue\OneDrive\Desktop\sebo\SeboUFSC\backend\src\main\java\br\ufsc\sebo\aplicacao\dto\chat\SolicitaMensagem.java
@@ -28,6 +29,10 @@ C:\Users\manue\OneDrive\Desktop\sebo\SeboUFSC\backend\src\main\java\br\ufsc\sebo
 C:\Users\manue\OneDrive\Desktop\sebo\SeboUFSC\backend\src\main\java\br\ufsc\sebo\dominio\entidades\item\TipoMidia.java
 C:\Users\manue\OneDrive\Desktop\sebo\SeboUFSC\backend\src\main\java\br\ufsc\sebo\dominio\entidades\Mensagem.java
 C:\Users\manue\OneDrive\Desktop\sebo\SeboUFSC\backend\src\main\java\br\ufsc\sebo\dominio\entidades\Notificacao.java
+C:\Users\manue\OneDrive\Desktop\sebo\SeboUFSC\backend\src\main\java\br\ufsc\sebo\dominio\entidades\proposta\AguardandoConfirmacaoState.java
+C:\Users\manue\OneDrive\Desktop\sebo\SeboUFSC\backend\src\main\java\br\ufsc\sebo\dominio\entidades\proposta\CanceladaState.java
+C:\Users\manue\OneDrive\Desktop\sebo\SeboUFSC\backend\src\main\java\br\ufsc\sebo\dominio\entidades\proposta\ConfirmadaState.java
+C:\Users\manue\OneDrive\Desktop\sebo\SeboUFSC\backend\src\main\java\br\ufsc\sebo\dominio\entidades\proposta\EstadoProposta.java
 C:\Users\manue\OneDrive\Desktop\sebo\SeboUFSC\backend\src\main\java\br\ufsc\sebo\dominio\entidades\proposta\Proposta.java
 C:\Users\manue\OneDrive\Desktop\sebo\SeboUFSC\backend\src\main\java\br\ufsc\sebo\dominio\entidades\proposta\PropostaObserver.java
 C:\Users\manue\OneDrive\Desktop\sebo\SeboUFSC\backend\src\main\java\br\ufsc\sebo\dominio\entidades\proposta\StatusProposta.java
