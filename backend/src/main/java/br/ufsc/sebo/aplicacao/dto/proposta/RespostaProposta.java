@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import br.ufsc.sebo.aplicacao.dto.item.RespostaItemPublico;
+import br.ufsc.sebo.dominio.entidades.Chat;
 import br.ufsc.sebo.dominio.entidades.Usuario;
 import br.ufsc.sebo.dominio.entidades.item.Item;
 import br.ufsc.sebo.dominio.entidades.proposta.Proposta;
@@ -27,14 +28,19 @@ public class RespostaProposta {
     private final StatusProposta status;
     private final List<RespostaItemPublico> itens;
     private final List<Participante> participantes;
+    private final Integer chatId;
+    private final boolean chatAtivo;
 
     private RespostaProposta(Integer id, Date data, StatusProposta status,
-                             List<RespostaItemPublico> itens, List<Participante> participantes) {
+                             List<RespostaItemPublico> itens, List<Participante> participantes,
+                             Integer chatId, boolean chatAtivo) {
         this.id = id;
         this.data = data;
         this.status = status;
         this.itens = itens;
         this.participantes = participantes;
+        this.chatId = chatId;
+        this.chatAtivo = chatAtivo;
     }
 
     public static RespostaProposta de(Proposta proposta, ServicoItem servicoItem) {
@@ -64,8 +70,11 @@ public class RespostaProposta {
             })
             .collect(Collectors.toList());
 
+        Chat chat = proposta.getChatSessao();
         return new RespostaProposta(proposta.getIdProposta(), proposta.getData(), proposta.getStatus(),
-            itens, participantes);
+            itens, participantes,
+            chat == null ? null : chat.getIdChat(),
+            chat != null && chat.estaAtivo());
     }
 
     public Integer getId() { return id; }
@@ -73,4 +82,6 @@ public class RespostaProposta {
     public StatusProposta getStatus() { return status; }
     public List<RespostaItemPublico> getItens() { return itens; }
     public List<Participante> getParticipantes() { return participantes; }
+    public Integer getChatId() { return chatId; }
+    public boolean isChatAtivo() { return chatAtivo; }
 }

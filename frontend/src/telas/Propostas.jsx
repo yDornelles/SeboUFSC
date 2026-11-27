@@ -10,7 +10,7 @@ const FILTROS = [
   { id: 'CANCELADA', titulo: 'Canceladas' },
 ];
 
-export default function Propostas({ usuario, propostaIdAlvo, onAtualizar }) {
+export default function Propostas({ usuario, propostaIdAlvo, onAtualizar, onAbrirChat }) {
   const meuId = usuario?.uid || usuario?.id;
   const [propostas, setPropostas] = useState([]);
   const [carregando, setCarregando] = useState(true);
@@ -130,6 +130,7 @@ export default function Propostas({ usuario, propostaIdAlvo, onAtualizar }) {
             enviando={enviandoId === p.id}
             destacada={p.id === propostaIdAlvo}
             onResponder={(aceite) => responder(p, aceite)}
+            onAbrirChat={() => onAbrirChat?.(p.id)}
           />
         ))}
       </div>

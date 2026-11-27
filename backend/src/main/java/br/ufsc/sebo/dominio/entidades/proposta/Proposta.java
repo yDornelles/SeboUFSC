@@ -16,6 +16,7 @@ public class Proposta {
     private List<Usuario> participantes;
     private List<Usuario> aceites;
     private Chat chatSessao;
+    private final List<PropostaObserver> observadores = new ArrayList<>();
 
     public Proposta(Integer idProposta, Date data, StatusProposta status, List<Item> itensEnvolvidos,
                      List<Usuario> participantes, Chat chatSessao) {
@@ -45,6 +46,23 @@ public class Proposta {
 
     public void setStatus(StatusProposta s) {
         this.status = s;
+        notificarObservadores();
+    }
+
+    public void adicionarObservador(PropostaObserver observador) {
+        if (!observadores.contains(observador)) {
+            observadores.add(observador);
+        }
+    }
+
+    public void removerObservador(PropostaObserver observador) {
+        observadores.remove(observador);
+    }
+
+    public void notificarObservadores() {
+        for (PropostaObserver o : new ArrayList<>(observadores)) {
+            o.onPropostaAtualizada(this);
+        }
     }
 
     public List<Item> getItens() {

@@ -14,6 +14,7 @@ import br.ufsc.sebo.dominio.entidades.Usuario;
 import br.ufsc.sebo.dominio.entidades.item.Item;
 import br.ufsc.sebo.dominio.entidades.item.StatusItem;
 import br.ufsc.sebo.dominio.entidades.proposta.Proposta;
+import br.ufsc.sebo.dominio.entidades.proposta.PropostaObserver;
 import br.ufsc.sebo.dominio.entidades.proposta.StatusProposta;
 
 @Service
@@ -25,11 +26,14 @@ public class ServicoProposta {
     private final ServicoItem servicoItem;
     private final ServicoUsuario servicoUsuario;
     private final ServicoNotificacao servicoNotificacao;
+    private final List<PropostaObserver> observadores;
 
-    public ServicoProposta(ServicoItem servicoItem, ServicoUsuario servicoUsuario, ServicoNotificacao servicoNotificacao) {
+    public ServicoProposta(ServicoItem servicoItem, ServicoUsuario servicoUsuario, ServicoNotificacao servicoNotificacao,
+                           List<PropostaObserver> observadores) {
         this.servicoItem = servicoItem;
         this.servicoUsuario = servicoUsuario;
         this.servicoNotificacao = servicoNotificacao;
+        this.observadores = observadores;
     }
 
     public Proposta criarProposta(List<String> itemIds, List<String> participanteIds) {
@@ -50,6 +54,7 @@ public class ServicoProposta {
 
         Proposta proposta = new Proposta(proximoId++, new Date(), StatusProposta.AGUARDANDO_CONFIRMACAO,
             itensEnvolvidos, participantes, null);
+        observadores.forEach(proposta::adicionarObservador);
         propostas.add(proposta);
 
         for (Usuario participante : participantes) {

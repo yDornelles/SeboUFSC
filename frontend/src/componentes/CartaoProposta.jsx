@@ -7,7 +7,7 @@ const STATUS_INFO = {
 const formatarData = (data) =>
   new Date(data).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
 
-function CartaoProposta({ proposta, meuId, enviando, destacada, onResponder }) {
+function CartaoProposta({ proposta, meuId, enviando, destacada, onResponder, onAbrirChat }) {
   const status = STATUS_INFO[proposta.status] ?? STATUS_INFO.AGUARDANDO_CONFIRMACAO;
   const itensPorId = Object.fromEntries(proposta.itens.map((i) => [i.id, i]));
   const eu = proposta.participantes.find((p) => p.id === meuId);
@@ -96,6 +96,14 @@ function CartaoProposta({ proposta, meuId, enviando, destacada, onResponder }) {
         <p style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>
           Você já aceitou. Aguardando os demais participantes.
         </p>
+      )}
+      {proposta.chatId != null && (
+        <button
+          onClick={onAbrirChat}
+          style={{ ...botaoAcao, width: '100%', backgroundColor: '#1d4ed8' }}
+        >
+          {proposta.chatAtivo ? 'Abrir chat da negociação' : 'Ver histórico do chat (encerrado)'}
+        </button>
       )}
     </article>
   );

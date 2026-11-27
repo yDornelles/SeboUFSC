@@ -10,6 +10,7 @@ import PerfilUsuario from './telas/PerfilUsuario';
 import EditarItem from './telas/EditarItem'; 
 import Propostas from './telas/Propostas';
 import Notificacoes from './telas/Notificacoes';
+import Chat from './telas/Chat';
 import useContadores from './hooks/useContadores';
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
   const [itemParaEditar, setItemParaEditar] = useState(null); 
   const [perfilIdAlvo, setPerfilIdAlvo] = useState(null); 
   const [propostaIdAlvo, setPropostaIdAlvo] = useState(null);
+  const [propostaIdChat, setPropostaIdChat] = useState(null);
 
   // Selos das abas: notificações não lidas e propostas aguardando resposta do usuário
   const { naoLidas, pendentes, recarregar: recarregarContadores } = useContadores(usuario?.uid);
@@ -64,6 +66,22 @@ function App() {
           <Propostas
             usuario={usuario}
             propostaIdAlvo={propostaIdAlvo}
+            onAtualizar={recarregarContadores}
+            onAbrirChat={(id) => {
+              setPropostaIdChat(id);
+              setAbaAtiva('chat');
+            }}
+          />
+        );
+      case 'chat':
+        return (
+          <Chat
+            usuario={usuario}
+            propostaId={propostaIdChat}
+            onVoltar={() => {
+              setPropostaIdAlvo(propostaIdChat);
+              setAbaAtiva('propostas');
+            }}
             onAtualizar={recarregarContadores}
           />
         );
